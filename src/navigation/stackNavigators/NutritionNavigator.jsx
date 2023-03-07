@@ -1,13 +1,16 @@
 import React from 'react'
-import { View, Text } from 'react-native/Libraries/Components/View/View'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import NutritionScreen from '../../screens/Nutrition';
+const Stack = createNativeStackNavigator();
 
 const NutritionNavigator = () => {
     return (
-        <View>
-            <Text>
-                NutritionNavigator
-            </Text>
-        </View>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+            }}>
+            <Stack.Screen name='NutritionHome' component={NutritionScreen} />
+        </Stack.Navigator>
     )
 }
 

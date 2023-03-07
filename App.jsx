@@ -1,13 +1,7 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useEffect } from 'react'
 import {
+  NativeEventEmitter,
+  NativeModules,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -15,104 +9,71 @@ import {
   Text,
   useColorScheme,
   View,
+  Image,
+  useWindowDimensions
 } from 'react-native';
-
+import BottomTabNavigator from './src/navigation/BottomTabNavigator';
+import AuthStackNavigator from './src/navigation/stackNavigators/AuthStackNavigator';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { theme } from './src/core/theme';
+import { Provider } from 'react-native-paper';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import { navigationRef } from './src/navigation/stackNavigators/RootNavigation';
+import * as RootNavigation from './src/navigation/stackNavigators/RootNavigation';
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import { LogBox } from 'react-native';
 
-function App(): JSX.Element {
+LogBox.ignoreAllLogs(true);
+
+const Stack = createNativeStackNavigator();
+
+const App = () => {
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+  // const { isLoggedIn, user } = useSelector(state => state.auth);
+  const isLoggedIn = false;
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+
+  return (
+    <Provider theme={theme}>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <NavigationContainer ref={navigationRef}
+        // onReady={() => RNBootSplash.hide()}
+        >
+
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            {!isLoggedIn ? (
+              <>
+                <Stack.Screen name="Auth" component={AuthStackNavigator} />
+
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="Root" component={BottomTabNavigator} />
+              </>
+            )}
+
+          </Stack.Navigator>
+        </NavigationContainer>
+      </View>
+    </Provider>
+  );
+};
 
 export default App;

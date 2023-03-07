@@ -1,14 +1,17 @@
 import React from 'react'
-import { View, Text } from 'react-native/Libraries/Components/View/View'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SupplementScreen from '../../screens/Supplement';
+const Stack = createNativeStackNavigator();
 
 
 const SupplementNavigator = () => {
     return (
-        <View>
-            <Text>
-                SupplementNavigator
-            </Text>
-        </View>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+            }}>
+            <Stack.Screen name='SupplementHome' component={SupplementScreen} />
+        </Stack.Navigator>
     )
 }
 

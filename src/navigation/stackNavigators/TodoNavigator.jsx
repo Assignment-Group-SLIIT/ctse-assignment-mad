@@ -1,13 +1,16 @@
 import React from 'react'
-import { View, Text } from 'react-native/Libraries/Components/View/View'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import TodoScreen from '../../screens/Todo';
+const Stack = createNativeStackNavigator();
 
 const TodoNavigator = () => {
     return (
-        <View>
-            <Text>
-                TodoNavigator
-            </Text>
-        </View>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+            }}>
+            <Stack.Screen name='TodoHome' component={TodoScreen} />
+        </Stack.Navigator>
     )
 }
 

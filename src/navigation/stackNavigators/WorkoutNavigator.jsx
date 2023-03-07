@@ -1,13 +1,16 @@
 import React from 'react'
-import { View, Text } from 'react-native/Libraries/Components/View/View'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import WorkoutScreen from '../../screens/Workout';
+const Stack = createNativeStackNavigator();
 
 const WorkoutNavigator = () => {
     return (
-        <View>
-            <Text>
-                WorkoutNavigator
-            </Text>
-        </View>
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false,
+            }}>
+            <Stack.Screen name='WorkoutdHome' component={WorkoutScreen} />
+        </Stack.Navigator>
     )
 }
 

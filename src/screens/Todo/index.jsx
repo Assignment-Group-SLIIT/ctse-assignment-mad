@@ -6,7 +6,7 @@ import { Text, FAB, Modal, Provider, Portal, } from "react-native-paper";
 import { theme } from '../../core/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const TodoScreen = ({ }) => {
+const TodoScreen = ({ navigation }) => {
     const [todos, setTodos] = useState([]);
     const [visible, setVisible] = React.useState(false);
 

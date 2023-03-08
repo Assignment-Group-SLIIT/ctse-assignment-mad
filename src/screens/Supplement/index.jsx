@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context"
 import { StyleSheet, Text } from "react-native"
 
-const SupplementScreen = ({ }) => {
+const SupplementScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <Text>

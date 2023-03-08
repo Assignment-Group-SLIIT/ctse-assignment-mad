@@ -35,10 +35,10 @@ const LoginScreen = ({ navigation }) => {
         auth().signInWithEmailAndPassword(email.value, password.value).then(() => {
             setMsg("Signing in...");
             onToggleSnackBar();
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-            })
+            // navigation.reset({
+            //     index: 0,
+            //     routes: [{ name: 'Root' }],
+            // })
         }).catch((error) => {
             setMsg("Please check your credentials!");
             onToggleSnackBar();

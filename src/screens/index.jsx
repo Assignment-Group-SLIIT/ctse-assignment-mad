@@ -1,23 +1,41 @@
+import React, { useState } from 'react'
+
 import { SafeAreaView } from "react-native-safe-area-context"
-import { ImageBackground, StyleSheet, Text, View } from "react-native"
+import { ImageBackground, StyleSheet } from "react-native"
+import auth from '@react-native-firebase/auth';
 import Button from "../components/Button"
+import { Snackbar } from 'react-native-paper';
 
 const image = require('../assets/images/homeBG.jpg')
 
-const HomeScreen = ({ }) => {
+const HomeScreen = ({ navigation }) => {
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+    const onDismissSnackBar = () => setVisible(false);
+
     return (
-        // <SafeAreaView style={styles.container}>
-        //     <Text>
-        //         Home Screen
-        //     </Text>
-        // </SafeAreaView>
         <SafeAreaView style={styles.container}>
             <ImageBackground source={image} resizeMode="cover" style={styles.image}>
                 <Button mode={"contained"} icon="calculator">BMI Calculator</Button>
                 <Button mode={"contained"} icon="weight-kilogram">Weight Convertor</Button>
                 <Button mode={"contained"} icon="nutrition">Macro Finder</Button>
-                <Button mode={"contained"} icon="logout">Signout</Button>
+                <Button mode={"contained"} icon="logout" onPress={() => {
+                    onToggleSnackBar();
+                    auth().signOut();
+                }}>Signout</Button>
             </ImageBackground>
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+                action={{
+                    label: 'Dismiss',
+                    onPress: () => {
+                        // Do something
+                    },
+                }}>
+                Signing out...
+            </Snackbar>
         </SafeAreaView>
     )
 }

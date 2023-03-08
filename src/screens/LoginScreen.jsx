@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
+import auth from '@react-native-firebase/auth';
 
-import { OnboardFlow, PrimaryButton } from 'react-native-onboard';
+import { OnboardFlow } from 'react-native-onboard';
 import { theme } from '../core/theme'
-
+import { Snackbar } from 'react-native-paper';
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import Button from '../components/Button'
@@ -16,6 +17,12 @@ const LoginScreen = ({ navigation }) => {
 
     const [email, setEmail] = useState({ value: '', error: '' })
     const [password, setPassword] = useState({ value: '', error: '' })
+    const [visible, setVisible] = useState(false);
+    const [msg, setMsg] = useState("Oops... Something went wrong");
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
 
     const onLoginPressed = () => {
         const emailError = emailValidator(email.value)
@@ -25,9 +32,17 @@ const LoginScreen = ({ navigation }) => {
             setPassword({ ...password, error: passwordError })
             return
         }
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
+        auth().signInWithEmailAndPassword(email.value, password.value).then(() => {
+            setMsg("Signing in...");
+            onToggleSnackBar();
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }],
+            })
+        }).catch((error) => {
+            setMsg("Please check your credentials!");
+            onToggleSnackBar();
+            console.log("error while signing in >>> ", error)
         })
     }
 
@@ -102,7 +117,17 @@ const LoginScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Background>
-
+            <Snackbar
+                visible={visible}
+                onDismiss={onDismissSnackBar}
+                action={{
+                    label: 'Dismiss',
+                    onPress: () => {
+                        // Do something
+                    },
+                }}>
+                {msg}
+            </Snackbar>
         </View>
     );
 }

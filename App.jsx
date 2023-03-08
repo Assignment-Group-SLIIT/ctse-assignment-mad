@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   NativeEventEmitter,
   NativeModules,
@@ -25,6 +25,8 @@ import { Provider } from 'react-native-paper';
 import { navigationRef } from './src/navigation/stackNavigators/RootNavigation';
 import * as RootNavigation from './src/navigation/stackNavigators/RootNavigation';
 
+import auth from '@react-native-firebase/auth';
+
 import { LogBox } from 'react-native';
 
 LogBox.ignoreAllLogs(true);
@@ -33,14 +35,27 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
 
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    console.log("user >>>>> ", user)
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
-  // const { isLoggedIn, user } = useSelector(state => state.auth);
-  const isLoggedIn = false;
 
 
   return (
@@ -58,7 +73,7 @@ const App = () => {
             screenOptions={{
               headerShown: false,
             }}>
-            {!isLoggedIn ? (
+            {!user ? (
               <>
                 <Stack.Screen name="Auth" component={AuthStackNavigator} />
 

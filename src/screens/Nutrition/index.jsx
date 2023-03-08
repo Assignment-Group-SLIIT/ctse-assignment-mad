@@ -2,52 +2,58 @@ import React, { useState, useEffect } from 'react'
 
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Pressable, StyleSheet, View } from "react-native"
-import { Text, FAB, Modal, Provider, Portal, Button } from "react-native-paper";
+import { Text, FAB, Modal, Provider, Portal, Divider } from "react-native-paper";
 import { theme } from '../../core/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const NutritionScreen = ({ navigation }) => {
     const [mealPlans, setMealPlans] = useState([]);
+    const [selectedMeal, setSelectedMeal] = useState(null);
+    const [visible, setVisible] = React.useState(false);
 
     useEffect(() => {
         setMealPlans([
             {
-                name: "meal 01"
+                id: "01",
+                name: "meal 01",
+                breakfast: [
+                    {
+                        name: "name 01",
+                        portion: "100g"
+                    },
+                    {
+                        name: "name 02",
+                        portion: "100g"
+                    }
+                ],
+                lunch: [
+                    {
+                        name: "name 01",
+                        portion: "100g"
+                    },
+                    {
+                        name: "name 02",
+                        portion: "100g"
+                    }
+                ],
+                dinner: [
+                    {
+                        name: "name 01",
+                        portion: "100g"
+                    },
+                    {
+                        name: "name 02",
+                        portion: "100g"
+                    }
+                ],
             },
-            {
-                name: "meal 02"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 03"
-            },
-            {
-                name: "meal 04"
-            },
+
         ]);
         return () => {
             setMealPlans([]);
         };
     }, []);
 
-    const [visible, setVisible] = React.useState(false);
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -63,7 +69,7 @@ const NutritionScreen = ({ navigation }) => {
                         mealPlans.map((meal, index) => {
                             return (
                                 <Pressable key={index} style={styles.card}
-                                    onPress={() => { showModal() }}
+                                    onPress={() => { showModal(); setSelectedMeal(mealPlans[index]) }}
                                 >
                                     <View style={styles.cardView}>
                                         <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{meal?.name?.charAt(0)}</Text>
@@ -92,7 +98,40 @@ const NutritionScreen = ({ navigation }) => {
 
                 <Portal>
                     <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalStyle}>
-                        <Text>Example Modal.  Click outside this area to dismiss.</Text>
+                        <Text>{selectedMeal?.name}</Text>
+                        <Text>
+                            Breakfast
+                        </Text>
+                        {
+                            selectedMeal?.breakfast?.map((food, index) => {
+                                return (
+                                    <Text>{food.name}</Text>
+                                )
+                            })
+                        }
+                        <Divider bold={true} />
+
+                        <Text>
+                            Lunch
+                        </Text>
+                        {
+                            selectedMeal?.lunch?.map((food, index) => {
+                                return (
+                                    <Text>{food.name}</Text>
+                                )
+                            })
+                        }
+                        <Divider bold={true} />
+                        <Text>
+                            Dinner
+                        </Text>
+                        {
+                            selectedMeal?.dinner?.map((food, index) => {
+                                return (
+                                    <Text>{food.name}</Text>
+                                )
+                            })
+                        }
                     </Modal>
                 </Portal>
 
@@ -150,7 +189,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    modalStyle: { borderRadius: 10, backgroundColor: 'white', padding: 20, flex: 1, margin: 10 }
+    modalStyle: {
+        borderRadius: 10,
+        backgroundColor: 'white',
+        padding: 20,
+        flex: 1,
+        margin: 10
+    }
 });
 
 export default NutritionScreen

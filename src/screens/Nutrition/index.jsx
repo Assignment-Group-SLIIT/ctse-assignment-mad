@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 
 import { SafeAreaView } from "react-native-safe-area-context"
-import { StyleSheet, TouchableOpacity, View } from "react-native"
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Text, FAB } from "react-native-paper";
+import { Pressable, StyleSheet, View } from "react-native"
+import { Text, FAB, Modal, Provider, Portal, Button } from "react-native-paper";
 import { theme } from '../../core/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const NutritionScreen = ({ navigation }) => {
     const [mealPlans, setMealPlans] = useState([]);
+
     useEffect(() => {
         setMealPlans([
             {
@@ -46,41 +46,58 @@ const NutritionScreen = ({ navigation }) => {
             setMealPlans([]);
         };
     }, []);
+
+    const [visible, setVisible] = React.useState(false);
+
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
+
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.headerTxt}>
-                Meal Plans
-            </Text>
-            <ScrollView style={{ width: '100%', padding: 5 }}>
-                {
-                    mealPlans.map((meal, index) => {
-                        return (
-                            <View key={index} style={styles.card}>
-                                <View style={styles.cardView}>
-                                    <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{meal?.name?.charAt(0)}</Text>
-                                </View>
-                                <Text style={{ fontSize: 20 }}>{meal.name}</Text>
-                            </View>
+        <Provider>
+            <SafeAreaView style={styles.container}>
+                <Text style={styles.headerTxt}>
+                    Meal Plans
+                </Text>
+                <ScrollView keyboardShouldPersistTaps='always' style={{ width: '100%', padding: 5, height: '100%' }} >
+                    {
+                        mealPlans.map((meal, index) => {
+                            return (
+                                <Pressable key={index} style={styles.card}
+                                    onPress={() => { showModal() }}
+                                >
+                                    <View style={styles.cardView}>
+                                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{meal?.name?.charAt(0)}</Text>
+                                    </View>
+                                    <Text style={{ fontSize: 20 }}>{meal.name}</Text>
+                                </Pressable>
 
-                        )
-                    })
-                }
-            </ScrollView>
-            <FAB
-                icon="plus"
-                style={styles.FAB}
-                color="#fff"
-                size='medium'
-                onPress={() => {
-                    // navigation.navigate('ScreenOne');
-                    navigation.navigate('Root', {
-                        screen: 'Todos',
-                        initial: false,
-                    });
-                }}>
+                            )
+                        })
+                    }
+                </ScrollView>
+                <FAB
+                    icon="plus"
+                    style={styles.FAB}
+                    color="#fff"
+                    size='medium'
+                    onPress={() => {
+                        // navigation.navigate('ScreenOne');
+                        navigation.navigate('Root', {
+                            screen: 'Todos',
+                            initial: false,
+                        });
+                    }}>
 
-            </FAB>
-        </SafeAreaView>
+                </FAB>
+
+                <Portal>
+                    <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.modalStyle}>
+                        <Text>Example Modal.  Click outside this area to dismiss.</Text>
+                    </Modal>
+                </Portal>
+
+            </SafeAreaView>
+        </Provider>
     )
 }
 
@@ -119,7 +136,7 @@ const styles = StyleSheet.create({
         elevation: 0.5,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     cardView: {
         width: '20%',
@@ -131,8 +148,9 @@ const styles = StyleSheet.create({
         borderColor: theme.colors.primary,
         marginRight: 20,
         alignItems: 'center',
-        justifyContent: 'center'
-    }
+        justifyContent: 'center',
+    },
+    modalStyle: { borderRadius: 10, backgroundColor: 'white', padding: 20, flex: 1, margin: 10 }
 });
 
 export default NutritionScreen

@@ -41,7 +41,6 @@ const App = () => {
 
   // Handle user state changes
   function onAuthStateChanged(user) {
-    console.log("user >>>>> ", user)
     setUser(user);
     if (initializing) setInitializing(false);
   }

@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        paddingHorizontal: 20
+        paddingHorizontal: 40
     },
     text: {
         color: 'white',

@@ -17,19 +17,19 @@ const screenOptions = (route, color) => {
 
     switch (route.name) {
         case 'Home':
-            iconName = 'home'
+            iconName = 'home';
             break
         case 'Workouts':
-            iconName = 'run'
+            iconName = 'run';
             break
         case 'Nutrition':
-            iconName = 'nutrition'
+            iconName = 'nutrition';
             break
         case 'Todos':
-            iconName = 'list-status'
+            iconName = 'list-status';
             break
         case 'Supplements':
-            iconName = 'bottle-tonic-plus-outline'
+            iconName = 'bottle-tonic-plus-outline';
             break
         default:
             break
@@ -45,10 +45,8 @@ const BottomTabNavigator = () => {
                 tabBarIcon: ({ color }) => screenOptions(route, color),
                 headerShown: false,
                 tabBarStyle: {
-                    // backgroundColor: '#213B71',
                     backgroundColor: theme.colors.tabBarBackground,
-                    // backgroundColor: '#7b6bc3',
-                    height: 70,
+                    height: 60,
                 },
                 tabBarActiveTintColor: '#000',
                 tabBarInactiveTintColor: '#FFFFFF',

@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import {
-  NativeEventEmitter,
-  NativeModules,
-  SafeAreaView,
-  ScrollView,
   StatusBar,
-  StyleSheet,
-  Text,
   useColorScheme,
   View,
-  Image,
-  useWindowDimensions
 } from 'react-native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import AuthStackNavigator from './src/navigation/stackNavigators/AuthStackNavigator';
@@ -23,7 +15,6 @@ import { theme } from './src/core/theme';
 import { Provider } from 'react-native-paper';
 
 import { navigationRef } from './src/navigation/stackNavigators/RootNavigation';
-import * as RootNavigation from './src/navigation/stackNavigators/RootNavigation';
 
 import auth from '@react-native-firebase/auth';
 
@@ -52,17 +43,12 @@ const App = () => {
 
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-
   return (
     <Provider theme={theme}>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <StatusBar
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
+          backgroundColor={theme.colors.primary}
         />
         <NavigationContainer ref={navigationRef}
         // onReady={() => RNBootSplash.hide()}

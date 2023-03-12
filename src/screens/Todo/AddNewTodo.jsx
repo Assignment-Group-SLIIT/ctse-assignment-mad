@@ -8,7 +8,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 import firestore from '@react-native-firebase/firestore';
 
-const AddNewTodo = () => {
+const AddNewTodo = ({navigation}) => {
   const [title, setTitle] = useState('');
   const [list, setList] = useState([{addList: ''}]);
   const [visible, setVisible] = useState(false);
@@ -40,7 +40,7 @@ const AddNewTodo = () => {
         firestore().collection('todos').doc(value.id).update({id: value.id});
         setMsg('Todo Saved Successfully!');
         onToggleSnackBar();
-        navigation.navigate('NutritionHome');
+        navigation.navigate('TodoHome');
       });
   };
 

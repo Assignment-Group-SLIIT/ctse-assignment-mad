@@ -2,6 +2,7 @@ import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../../screens';
 import MacroFinder from '../../screens/Nutrition/MacroFinder';
+import WeightConverter from '../../screens/Workout/WeightConverter';
 import BMICalculator from '../../screens/Todo/BMICalculator';
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,7 @@ const HomeStackNavigator = () => {
             }}>
             <Stack.Screen name='DashboardHome' component={HomeScreen} />
             <Stack.Screen name='MacroFinderScreen' component={MacroFinder} />
+            <Stack.Screen name='WeightConverterScreen' component={WeightConverter} />
             <Stack.Screen name='BMICalculator' component={BMICalculator} />
 
         </Stack.Navigator>

@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <ImageBackground source={image} resizeMode="cover" style={styles.image}>
                 <Button mode={"contained"} icon="calculator" onPress={() => { navigation.navigate("BMICalculator") }}>BMI Calculator</Button>
-                <Button mode={"contained"} icon="weight-kilogram">Weight Convertor</Button>
+                <Button mode={"contained"} icon="weight-kilogram" onPress={() => { navigation.navigate("WeightConverterScreen") }}>Weight Convertor</Button>
                 <Button mode={"contained"} icon="nutrition" onPress={() => { navigation.navigate("MacroFinderScreen") }}>Macro Finder</Button>
                 <Button mode={"contained"} icon="logout" onPress={() => {
                     onToggleSnackBar();

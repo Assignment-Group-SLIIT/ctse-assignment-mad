@@ -1,15 +1,12 @@
-import {StyleSheet, View, Pressable} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
 import {Text, Divider, TextInput, Snackbar} from 'react-native-paper';
-import {theme} from '../../core/theme';
 import {ScrollView} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 import firestore from '@react-native-firebase/firestore';
 
 const AddWorkOut = ({navigation}) => {
-  const [workoutId, setWorkoutId] = useState('');
   const [name, setName] = useState('');
   const [packageType, setPackageType] = useState('');
   const [caloriesBurnt, setCaloriesBurnt] = useState('');
@@ -25,25 +22,21 @@ const AddWorkOut = ({navigation}) => {
 
   const onAddWorkOut = () => {
     if (
-      id="",
-      name,
-      workoutId, 
-      packageType,
-      caloriesBurnt. 
-      duration, 
-      steps,
-      url 
+      name == ""||
+      packageType == ""||
+      caloriesBurnt== ""||
+      duration== ""||
+      steps== ""
     ) {
       setMsg('Please fill all the inputs!');
       onToggleSnackBar();
       return;
     }
 
-    setMsg('Saving the meal...');
+    setMsg('Saving the workout...');
     onToggleSnackBar();
 
     const workout = {
-      workoutId,
       name,
       packageType,
       caloriesBurnt,
@@ -57,9 +50,9 @@ const AddWorkOut = ({navigation}) => {
       .add(workout)
       .then(value => {
         firestore().collection('workouts').doc(value.id).update({id: value.id});
-        setMsg('Meal Saved Successfully!');
+        setMsg('Workout Saved Successfully!');
         onToggleSnackBar();
-        navigation.navigate('WorkOutsHome');
+        navigation.navigate('WorkOutHome');
       });
   };
 
@@ -68,37 +61,22 @@ const AddWorkOut = ({navigation}) => {
       <ScrollView
         keyboardShouldPersistTaps="always"
         style={{width: '100%', padding: 5, height: '100%'}}>
-        <TextInput
-          mode="outlined"
-          label="WorkOut ID XX1234"
-          // placeholder="Name of you meal"
-          value={workoutId}
-          onChangeText={e => {
-            setWorkoutId(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
+             <Text style={{fontSize: 18, fontWeight: '500', marginTop: 15, marginLeft:"25%"}}>
+            WorkOut Plan Details
+          </Text>
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
             width: '100%',
             position: 'relative',
           }}>
-          <Text style={{fontSize: 18, fontWeight: '500', marginTop: 15}}>
-            WorkOut Plan Details
-          </Text>
+         
 
           <TextInput
           mode="outlined"
           label="Name of Exercise"
-          // placeholder="Name of you meal"
           value={name}
           onChangeText={e => {
             setName(e);
@@ -113,7 +91,6 @@ const AddWorkOut = ({navigation}) => {
         <TextInput
           mode="outlined"
           label="Package Type"
-          // placeholder="Name of you meal"
           value={packageType}
           onChangeText={e => {
             setPackageType(e);
@@ -128,7 +105,7 @@ const AddWorkOut = ({navigation}) => {
         <TextInput
           mode="outlined"
           label="Calories Burnt"
-          // placeholder="Name of you meal"
+          keyboardType='numeric'  
           value={caloriesBurnt}
           onChangeText={e => {
             setCaloriesBurnt(e);
@@ -142,8 +119,8 @@ const AddWorkOut = ({navigation}) => {
         />
          <TextInput
           mode="outlined"
-          label="Duration"
-          // placeholder="Name of you meal"
+          label="Duration in minutes"
+          keyboardType='numeric'
           value={caloriesBurnt}
           onChangeText={e => {
             setDuration(e);
@@ -157,8 +134,9 @@ const AddWorkOut = ({navigation}) => {
         />
          <TextInput
           mode="outlined"
+          multiline
+          numberOfLines={4}
           label="Instructions"
-          // placeholder="Name of you meal"
           value={steps}
           onChangeText={e => {
             setSteps(e);
@@ -173,7 +151,6 @@ const AddWorkOut = ({navigation}) => {
         <TextInput
           mode="outlined"
           label="Video Link"
-          // placeholder="Name of you meal"
           value={url}
           onChangeText={e => {
             setUrl(e);

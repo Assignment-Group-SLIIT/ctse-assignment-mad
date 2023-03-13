@@ -12,7 +12,6 @@ const WorkoutScreen = ({ navigation }) => {
     const [workouts, setWorkouts] = useState([]);
     const [selectedWorkOut,setSelectedWorkOut]=useState({
         id:"",
-        workoutId:"",
         name:"",
         packageType:"",
         caloriesBurnt:"",
@@ -145,7 +144,7 @@ const WorkoutScreen = ({ navigation }) => {
                     size='medium'
                     onPress={() => {
                         // navigation.navigate('ScreenOne');
-                        navigation.navigate('');
+                        navigation.navigate('AddWorkOut');
                     }}>
 
                 </FAB>

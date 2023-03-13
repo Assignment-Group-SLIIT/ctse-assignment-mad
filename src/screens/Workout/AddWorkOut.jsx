@@ -116,16 +116,6 @@ const AddWorkOut = ({navigation}) => {
             marginBottom: 25,
           }}
         />
-        {/* <TextInput
-          mode="outlined"
-          label="Package Type"
-          value={packageType}
-          onChangeText={e => {
-            setPackageType(e);
-          }}
-          
-        /> */}
-
         
         <TextInput
           mode="outlined"
@@ -146,7 +136,7 @@ const AddWorkOut = ({navigation}) => {
           mode="outlined"
           label="Duration in minutes"
           keyboardType='numeric'
-          value={caloriesBurnt}
+          value={duration}
           onChangeText={e => {
             setDuration(e);
           }}

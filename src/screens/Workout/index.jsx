@@ -17,7 +17,7 @@ import {theme} from '../../core/theme';
 import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressIndicator from '../../components/ProgressIndicator';
-import DropDown from "react-native-paper-dropdown";
+import DropDown from 'react-native-paper-dropdown';
 
 const WorkoutScreen = ({navigation}) => {
   const [workouts, setWorkouts] = useState([]);
@@ -51,24 +51,24 @@ const WorkoutScreen = ({navigation}) => {
 
   const packages = [
     {
-      label: "Weight Gain",
-      value: "Weight Gain",
+      label: 'Weight Gain',
+      value: 'Weight Gain',
     },
     {
-      label: "Fat Loss",
-      value: "Fat Loss",
+      label: 'Fat Loss',
+      value: 'Fat Loss',
     },
     {
-      label: "Regular",
-      value: "Regular",
+      label: 'Regular',
+      value: 'Regular',
     },
   ];
 
-  const setPackage =(e)=>{
-    const newSelectedWorkOut = {...selectedWorkOut}
-    newSelectedWorkOut.packageType = e
+  const setPackage = e => {
+    const newSelectedWorkOut = {...selectedWorkOut};
+    newSelectedWorkOut.packageType = e;
     setSelectedWorkOut(newSelectedWorkOut);
-  }
+  };
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -111,7 +111,7 @@ const WorkoutScreen = ({navigation}) => {
         onToggleSnackBar();
       })
       .catch(err => {
-        console.log('error while updating the meal...', err);
+        console.log('error while updating the workout...', err);
       });
   };
 
@@ -160,7 +160,7 @@ const WorkoutScreen = ({navigation}) => {
                     {workout?.name?.charAt(0)}
                   </Text>
                 </View>
-                <Text style={{fontSize: 20}}>{meal.name}</Text>
+                <Text style={{fontSize: 20}}>{workout.name}</Text>
               </Pressable>
             );
           })}
@@ -205,15 +205,6 @@ const WorkoutScreen = ({navigation}) => {
             <ScrollView
               keyboardShouldPersistTaps="always"
               style={{width: '100%', padding: 5, height: '100%'}}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '500',
-                  marginTop: 15,
-                  marginLeft: '25%',
-                }}>
-                WorkOut Plan Details
-              </Text>
               <DropDown
                 label={'Package Type'}
                 mode={'outlined'}
@@ -221,7 +212,7 @@ const WorkoutScreen = ({navigation}) => {
                 showDropDown={() => setShowDropDown(true)}
                 onDismiss={() => setShowDropDown(false)}
                 value={selectedWorkOut.packageType}
-                setValue={(e)=>setPackage(e)}
+                setValue={e => setPackage(e)}
                 list={packages}
                 disabled={!isUpdating}
               />
@@ -233,23 +224,41 @@ const WorkoutScreen = ({navigation}) => {
                   width: '100%',
                   position: 'relative',
                 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    left: -104,
+                    marginTop: 8,
+                  }}>
+                  Name of Exercise
+                </Text>
                 <TextInput
                   mode="outlined"
                   label="Name of Exercise"
                   value={selectedWorkOut.name}
                   onChangeText={e => {
-                    const newSelectedWorkOut = {...selectedWorkOut}
-                    newSelectedWorkOut.name = e
+                    const newSelectedWorkOut = {...selectedWorkOut};
+                    newSelectedWorkOut.name = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: '#e4e8e5',
                     width: '100%',
-                    marginTop: 25,
+                    marginTop: 2,
                     marginBottom: 25,
                   }}
                   disabled={!isUpdating}
                 />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    left: -118,
+                    marginTop: 8,
+                  }}>
+                  Calories Burnt
+                </Text>
 
                 <TextInput
                   mode="outlined"
@@ -257,36 +266,54 @@ const WorkoutScreen = ({navigation}) => {
                   keyboardType="numeric"
                   value={selectedWorkOut.caloriesBurnt}
                   onChangeText={e => {
-                    const newSelectedWorkOut = {...selectedWorkOut}
-                    newSelectedWorkOut.caloriesBurnt = e
+                    const newSelectedWorkOut = {...selectedWorkOut};
+                    newSelectedWorkOut.caloriesBurnt = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: '#e4e8e5',
                     width: '100%',
-                    marginTop: 10,
+                    marginTop: 2,
                     marginBottom: 25,
                   }}
                   disabled={!isUpdating}
                 />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    left: -100,
+                    marginTop: 8,
+                  }}>
+                  Duration in minutes
+                </Text>
                 <TextInput
                   mode="outlined"
                   label="Duration in minutes"
                   keyboardType="numeric"
                   value={selectedWorkOut.duration}
                   onChangeText={e => {
-                    const newSelectedWorkOut = {...selectedWorkOut}
-                    newSelectedWorkOut.duration = e
+                    const newSelectedWorkOut = {...selectedWorkOut};
+                    newSelectedWorkOut.duration = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: '#e4e8e5',
                     width: '100%',
-                    marginTop: 10,
+                    marginTop: 2,
                     marginBottom: 25,
                   }}
                   disabled={!isUpdating}
                 />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    left: -124,
+                    marginTop: 8,
+                  }}>
+                  Instructions
+                </Text>
                 <TextInput
                   mode="outlined"
                   multiline
@@ -294,37 +321,45 @@ const WorkoutScreen = ({navigation}) => {
                   label="Instructions"
                   value={selectedWorkOut.steps}
                   onChangeText={e => {
-                    const newSelectedWorkOut = {...selectedWorkOut}
-                    newSelectedWorkOut.steps = e
+                    const newSelectedWorkOut = {...selectedWorkOut};
+                    newSelectedWorkOut.steps = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: '#e4e8e5',
                     width: '100%',
-                    marginTop: 10,
+                    marginTop: 2,
                     marginBottom: 25,
                   }}
                   disabled={!isUpdating}
                 />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    left: -132,
+                    marginTop: 8,
+                  }}>
+                  Video Link
+                </Text>
                 <TextInput
                   mode="outlined"
                   label="Video Link"
                   value={selectedWorkOut.url}
                   onChangeText={e => {
-                    const newSelectedWorkOut = {...selectedWorkOut}
-                    newSelectedWorkOut.url = e
+                    const newSelectedWorkOut = {...selectedWorkOut};
+                    newSelectedWorkOut.url = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
                   style={{
-                    backgroundColor: '#fff',
+                    backgroundColor: '#e4e8e5',
                     width: '100%',
-                    marginTop: 10,
+                    marginTop: 2,
                     marginBottom: 25,
                   }}
                   disabled={!isUpdating}
                 />
               </View>
-
             </ScrollView>
           </Modal>
 

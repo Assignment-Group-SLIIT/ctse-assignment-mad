@@ -6508,6 +6508,11 @@
   "resolved" "https://registry.npmjs.org/react-native-onboard/-/react-native-onboard-2.5.12.tgz"
   "version" "2.5.12"
 
+"react-native-paper-dropdown@^1.0.7":
+  "integrity" "sha512-St0rZFw5sC7mbXtFCOGsyEa0fIBaG6Cfz78RsjFNzTj+rKd1i9qlDY2O7eOa2zAUEnFlL+C7FXdXUY9RUNELNw=="
+  "resolved" "https://registry.npmjs.org/react-native-paper-dropdown/-/react-native-paper-dropdown-1.0.7.tgz"
+  "version" "1.0.7"
+
 "react-native-paper@^5.3.1":
   "integrity" "sha512-AWs71G2L+Z51NAlWBKmRDiCOL9kPIMCtQ96aYACQTOLUPATguQA4xJEG0ju033uon9zmNHEr0MkQLcVx6E+WdA=="
   "resolved" "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.3.1.tgz"

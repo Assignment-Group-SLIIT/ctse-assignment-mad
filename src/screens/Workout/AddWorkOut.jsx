@@ -5,6 +5,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 import firestore from '@react-native-firebase/firestore';
+import DropDown from "react-native-paper-dropdown";
 
 const AddWorkOut = ({navigation}) => {
   const [name, setName] = useState('');
@@ -19,6 +20,23 @@ const AddWorkOut = ({navigation}) => {
 
   const onToggleSnackBar = () => setVisible(!visible);
   const onDismissSnackBar = () => setVisible(false);
+
+  const [showDropDown, setShowDropDown] = useState(false);
+
+  const packages = [
+    {
+      label: "Weight Gain",
+      value: "Weight Gain",
+    },
+    {
+      label: "Fat Loss",
+      value: "Fat Loss",
+    },
+    {
+      label: "Regular",
+      value: "Regular",
+    },
+  ];
 
   const onAddWorkOut = () => {
     if (
@@ -64,6 +82,16 @@ const AddWorkOut = ({navigation}) => {
              <Text style={{fontSize: 18, fontWeight: '500', marginTop: 15, marginLeft:"25%"}}>
             WorkOut Plan Details
           </Text>
+          <DropDown
+              label={"Package Type"}
+              mode={"outlined"}
+              visible={showDropDown}
+              showDropDown={() => setShowDropDown(true)}
+              onDismiss={() => setShowDropDown(false)}
+              value={packageType}
+              setValue={setPackageType}
+              list={packages}     
+            />
         <View
           style={{
             flexDirection: 'column',
@@ -84,24 +112,21 @@ const AddWorkOut = ({navigation}) => {
           style={{
             backgroundColor: '#fff',
             width: '100%',
-            marginTop: 10,
+            marginTop: 25,
             marginBottom: 25,
           }}
         />
-        <TextInput
+        {/* <TextInput
           mode="outlined"
           label="Package Type"
           value={packageType}
           onChangeText={e => {
             setPackageType(e);
           }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
+          
+        /> */}
+
+        
         <TextInput
           mode="outlined"
           label="Calories Burnt"

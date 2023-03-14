@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Pressable, StyleSheet, View} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, StyleSheet, View, Dimensions } from 'react-native';
 import {
   Text,
   FAB,
@@ -14,12 +15,12 @@ import {
   Dialog,
   Button,
 } from 'react-native-paper';
-import {theme} from '../../core/theme';
-import {ScrollView} from 'react-native-gesture-handler';
+import { theme } from '../../core/theme';
+import { ScrollView } from 'react-native-gesture-handler';
 import ProgressIndicator from '../../components/ProgressIndicator';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const TodoScreen = ({navigation}) => {
+const TodoScreen = ({ navigation }) => {
   const [todos, setTodos] = useState([]);
   const [visible, setVisible] = React.useState(false);
   const [selectTodo, setSelectTodo] = useState({
@@ -40,6 +41,10 @@ const TodoScreen = ({navigation}) => {
   const [isDelete, setIsDelete] = useState(false);
   const [selectedId, setSelectedId] = useState('');
 
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
   const showDialog = () => setIsDelete(true);
 
   const hideDialog = () => setIsDelete(false);
@@ -51,21 +56,35 @@ const TodoScreen = ({navigation}) => {
   const hideModal = () => setVisible(false);
 
   useEffect(() => {
-    const subscriber = firestore()
-      .collection('todos')
-      .onSnapshot(querySnapshot => {
-        const todos = [];
+    if (user) {
+      const subscriber = firestore()
+        .collection('todos')
+        .where('tenantId', '==', user.uid)
+        .onSnapshot(querySnapshot => {
+          const todos = [];
 
-        querySnapshot.forEach(documentSnapshot => {
-          todos.push(documentSnapshot.data());
+          querySnapshot.forEach(documentSnapshot => {
+            todos.push(documentSnapshot.data());
+          });
+
+          setTodos(todos);
+          setIsLoading(false);
         });
 
-        setTodos(todos);
-        setIsLoading(false);
-      });
+      // Unsubscribe from events when no longer in use
+      return () => subscriber();
+    }
+  }, [user]);
 
-    // Unsubscribe from events when no longer in use
-    return () => subscriber();
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
   }, []);
 
   const onIconPress = async () => {
@@ -78,7 +97,7 @@ const TodoScreen = ({navigation}) => {
     await firestore()
       .collection('todos')
       .doc(selectTodo.id)
-      .update({...selectTodo})
+      .update({ ...selectTodo })
       .then(() => {
         setIconName('square-edit-outline');
         setIsUpdating(false);
@@ -118,29 +137,41 @@ const TodoScreen = ({navigation}) => {
         <Text style={styles.headerTxt}>Your Todos</Text>
         <ScrollView
           keyboardShouldPersistTaps="always"
-          style={{width: '100%', padding: 5, height: '100%'}}>
-          {todos.map((todo, index) => {
-            return (
-              <Pressable
-                key={index}
-                style={styles.card}
-                onPress={() => {
-                  showModal();
-                  setSelectTodo(todos[index]);
-                }}
-                onLongPress={e => {
-                  showDialog();
-                  setSelectedId(todos[index]?.id);
-                }}>
-                <View style={styles.cardView}>
-                  <Text style={{fontSize: 22, fontWeight: 'bold'}}>
-                    {todo?.title?.charAt(0)}
+          style={{ width: '100%', padding: 5, height: '100%' }}>
+          {
+            todos.length == 0 ?
+              (
+                <View style={{ height: Dimensions.get('window').height - 180, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text>
+                    No records to display...
                   </Text>
                 </View>
-                <Text style={{fontSize: 20}}>{todo.title}</Text>
-              </Pressable>
-            );
-          })}
+              ) :
+              (
+                todos.map((todo, index) => {
+                  return (
+                    <Pressable
+                      key={index}
+                      style={styles.card}
+                      onPress={() => {
+                        showModal();
+                        setSelectTodo(todos[index]);
+                      }}
+                      onLongPress={e => {
+                        showDialog();
+                        setSelectedId(todos[index]?.id);
+                      }}>
+                      <View style={styles.cardView}>
+                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+                          {todo?.title?.charAt(0)}
+                        </Text>
+                      </View>
+                      <Text style={{ fontSize: 20 }}>{todo.title}</Text>
+                    </Pressable>
+                  );
+                })
+              )
+          }
         </ScrollView>
         {isLoading && <ProgressIndicator isLoading={isDelete} />}
         <FAB
@@ -167,21 +198,21 @@ const TodoScreen = ({navigation}) => {
                 position: 'relative',
               }}>
               <Text
-                style={{fontSize: 20, textAlign: 'center', fontWeight: '700'}}>
+                style={{ fontSize: 20, textAlign: 'center', fontWeight: '700' }}>
                 {selectTodo?.addList}
               </Text>
               <Pressable
                 onPress={() => {
                   onIconPress();
                 }}
-                style={{position: 'absolute', right: 0}}>
+                style={{ position: 'absolute', right: 0 }}>
                 <Icon name={iconName} size={35} color={theme.colors.primary} />
               </Pressable>
             </View>
-            <Text style={{fontSize: 28, fontWeight: '500', marginTop: 15}}>
+            <Text style={{ fontSize: 28, fontWeight: '500', marginTop: 15 }}>
               Todo List
             </Text>
-            <Divider bold={true} style={{marginBottom: 5}} />
+            <Divider bold={true} style={{ marginBottom: 5 }} />
 
             <View
               style={{
@@ -206,11 +237,11 @@ const TodoScreen = ({navigation}) => {
                       placeholder={`Todo ${index + 1}`}
                       value={selectTodo.list[index].addList}
                       onChangeText={e => {
-                        const newSelectedTodo = {...selectTodo};
+                        const newSelectedTodo = { ...selectTodo };
                         newSelectedTodo.list[index].addList = e;
                         setSelectTodo(newSelectedTodo);
                       }}
-                      style={{backgroundColor: '#fff', width: '75%'}}
+                      style={{ backgroundColor: '#fff', width: '75%' }}
                       disabled={!isUpdating}
                     />
                   </View>

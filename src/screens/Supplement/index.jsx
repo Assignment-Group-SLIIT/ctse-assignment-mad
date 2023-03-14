@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from "react-native-safe-area-context"
 import { ScrollView } from 'react-native-gesture-handler';
 import { theme } from '../../core/theme';
 import { Text, FAB, Modal, Provider, Portal, Divider, TextInput, Snackbar, Dialog, Button } from "react-native-paper";
-import { StyleSheet, Pressable, View } from "react-native"
+import { StyleSheet, Pressable, View, Dimensions } from "react-native"
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressIndicator from '../../components/ProgressIndicator';
 
@@ -27,6 +28,9 @@ const SupplementScreen = ({ navigation }) => {
     const [errMsg, setErrMsg] = useState("")
     const [isOpenSnackBar, setOpenSnackBar] = useState(false);
     const [isUpdating, setUpdating] = useState(false)
+    // Set an initializing state whilst Firebase connects
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState();
 
     const closeModal = () => {
         setOpenModal(false)
@@ -66,7 +70,7 @@ const SupplementScreen = ({ navigation }) => {
     }
 
     const GetSupplementDetails = async () => {
-        const subscriber = await firestore().collection('supplement').onSnapshot(querySnapshot => {
+        const subscriber = await firestore().collection('supplement').where('tenantId', '==', user.uid).onSnapshot(querySnapshot => {
             const supplements = [];
             querySnapshot.forEach(documentSnapshot => {
                 supplements.push(documentSnapshot.data());
@@ -98,8 +102,21 @@ const SupplementScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        GetSupplementDetails()
-    }, [])
+        if (user) {
+            GetSupplementDetails()
+        }
+    }, [user])
+
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
+    useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber; // unsubscribe on unmount
+    }, []);
 
 
 
@@ -114,32 +131,43 @@ const SupplementScreen = ({ navigation }) => {
                     :
 
                     <ScrollView keyboardShouldPersistTaps='always' style={{ width: '100%', padding: 5, height: '100%' }} >
-                        {supplementList.map((supplement, index) => {
-                            return (
-                                <Pressable
-                                    key={index}
-                                    style={styles.card}
-                                    onPress={() => {
-                                        showModal();
-                                        setUpdateData(supplement)
-                                    }}
-                                    onLongPress={(e) => {
-                                        openDeleteDialog();
-                                        setSelectedSupplementId(supplement.id)
-                                    }}
-                                >
-                                    <View style={styles.cardView}>
-                                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+                        {
 
-                                            {supplement?.supplementName?.charAt(0)}
+                            supplementList?.length == 0 ?
+                                (
+                                    <View style={{ height: Dimensions.get('window').height - 180, alignItems: 'center', justifyContent: 'center' }}>
+                                        <Text>
+                                            No records to display...
                                         </Text>
                                     </View>
-                                    <Text style={{ fontSize: 20 }}>
-                                        {supplement.supplementName}
-                                    </Text>
-                                </Pressable>
-                            )
-                        })}
+                                ) :
+                                (supplementList.map((supplement, index) => {
+                                    return (
+                                        <Pressable
+                                            key={index}
+                                            style={styles.card}
+                                            onPress={() => {
+                                                showModal();
+                                                setUpdateData(supplement)
+                                            }}
+                                            onLongPress={(e) => {
+                                                openDeleteDialog();
+                                                setSelectedSupplementId(supplement.id)
+                                            }}
+                                        >
+                                            <View style={styles.cardView}>
+                                                <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+
+                                                    {supplement?.supplementName?.charAt(0)}
+                                                </Text>
+                                            </View>
+                                            <Text style={{ fontSize: 20 }}>
+                                                {supplement.supplementName}
+                                            </Text>
+                                        </Pressable>
+                                    )
+                                }))
+                        }
 
                     </ScrollView>
                 }

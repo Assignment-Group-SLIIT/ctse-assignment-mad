@@ -1,13 +1,14 @@
-import {StyleSheet, View} from 'react-native';
-import React, {useState} from 'react';
-import {Text, Divider, TextInput, Snackbar} from 'react-native-paper';
-import {ScrollView} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, Divider, TextInput, Snackbar } from 'react-native-paper';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import DropDown from "react-native-paper-dropdown";
 
-const AddWorkOut = ({navigation}) => {
+const AddWorkOut = ({ navigation }) => {
   const [name, setName] = useState('');
   const [packageType, setPackageType] = useState('');
   const [caloriesBurnt, setCaloriesBurnt] = useState('');
@@ -17,6 +18,10 @@ const AddWorkOut = ({navigation}) => {
 
   const [visible, setVisible] = useState(false);
   const [msg, setMsg] = useState('Oops... Something went wrong');
+
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
 
   const onToggleSnackBar = () => setVisible(!visible);
   const onDismissSnackBar = () => setVisible(false);
@@ -38,13 +43,24 @@ const AddWorkOut = ({navigation}) => {
     },
   ];
 
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
   const onAddWorkOut = () => {
     if (
-      name == ""||
-      packageType == ""||
-      caloriesBurnt== ""||
-      duration== ""||
-      steps== ""
+      name == "" ||
+      packageType == "" ||
+      caloriesBurnt == "" ||
+      duration == "" ||
+      steps == ""
     ) {
       setMsg('Please fill all the inputs!');
       onToggleSnackBar();
@@ -55,6 +71,7 @@ const AddWorkOut = ({navigation}) => {
     onToggleSnackBar();
 
     const workout = {
+      tenantId: user?.uid,
       name,
       packageType,
       caloriesBurnt,
@@ -67,7 +84,7 @@ const AddWorkOut = ({navigation}) => {
       .collection('workouts')
       .add(workout)
       .then(value => {
-        firestore().collection('workouts').doc(value.id).update({id: value.id});
+        firestore().collection('workouts').doc(value.id).update({ id: value.id });
         setMsg('Workout Saved Successfully!');
         onToggleSnackBar();
         navigation.navigate('WorkOutHome');
@@ -78,20 +95,20 @@ const AddWorkOut = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <ScrollView
         keyboardShouldPersistTaps="always"
-        style={{width: '100%', padding: 5, height: '100%'}}>
-             <Text style={{fontSize: 18, fontWeight: '500', marginTop: 15, marginLeft:"25%"}}>
-            WorkOut Plan Details
-          </Text>
-          <DropDown
-              label={"Package Type"}
-              mode={"outlined"}
-              visible={showDropDown}
-              showDropDown={() => setShowDropDown(true)}
-              onDismiss={() => setShowDropDown(false)}
-              value={packageType}
-              setValue={setPackageType}
-              list={packages}     
-            />
+        style={{ width: '100%', padding: 5, height: '100%' }}>
+        <Text style={{ fontSize: 18, fontWeight: '500', marginTop: 15, marginLeft: "25%" }}>
+          WorkOut Plan Details
+        </Text>
+        <DropDown
+          label={"Package Type"}
+          mode={"outlined"}
+          visible={showDropDown}
+          showDropDown={() => setShowDropDown(true)}
+          onDismiss={() => setShowDropDown(false)}
+          value={packageType}
+          setValue={setPackageType}
+          list={packages}
+        />
         <View
           style={{
             flexDirection: 'column',
@@ -100,96 +117,96 @@ const AddWorkOut = ({navigation}) => {
             width: '100%',
             position: 'relative',
           }}>
-         
+
 
           <TextInput
-          mode="outlined"
-          label="Name of Exercise"
-          value={name}
-          onChangeText={e => {
-            setName(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 25,
-            marginBottom: 25,
-          }}
-        />
-        
-        <TextInput
-          mode="outlined"
-          label="Calories Burnt"
-          keyboardType='numeric'  
-          value={caloriesBurnt}
-          onChangeText={e => {
-            setCaloriesBurnt(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
-         <TextInput
-          mode="outlined"
-          label="Duration in minutes"
-          keyboardType='numeric'
-          value={duration}
-          onChangeText={e => {
-            setDuration(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
-         <TextInput
-          mode="outlined"
-          multiline
-          numberOfLines={4}
-          label="Instructions"
-          value={steps}
-          onChangeText={e => {
-            setSteps(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
-        <TextInput
-          mode="outlined"
-          label="Video Link"
-          value={url}
-          onChangeText={e => {
-            setUrl(e);
-          }}
-          style={{
-            backgroundColor: '#fff',
-            width: '100%',
-            marginTop: 10,
-            marginBottom: 25,
-          }}
-        />
-          
-           
-     
+            mode="outlined"
+            label="Name of Exercise"
+            value={name}
+            onChangeText={e => {
+              setName(e);
+            }}
+            style={{
+              backgroundColor: '#fff',
+              width: '100%',
+              marginTop: 25,
+              marginBottom: 25,
+            }}
+          />
+
+          <TextInput
+            mode="outlined"
+            label="Calories Burnt"
+            keyboardType='numeric'
+            value={caloriesBurnt}
+            onChangeText={e => {
+              setCaloriesBurnt(e);
+            }}
+            style={{
+              backgroundColor: '#fff',
+              width: '100%',
+              marginTop: 10,
+              marginBottom: 25,
+            }}
+          />
+          <TextInput
+            mode="outlined"
+            label="Duration in minutes"
+            keyboardType='numeric'
+            value={duration}
+            onChangeText={e => {
+              setDuration(e);
+            }}
+            style={{
+              backgroundColor: '#fff',
+              width: '100%',
+              marginTop: 10,
+              marginBottom: 25,
+            }}
+          />
+          <TextInput
+            mode="outlined"
+            multiline
+            numberOfLines={4}
+            label="Instructions"
+            value={steps}
+            onChangeText={e => {
+              setSteps(e);
+            }}
+            style={{
+              backgroundColor: '#fff',
+              width: '100%',
+              marginTop: 10,
+              marginBottom: 25,
+            }}
+          />
+          <TextInput
+            mode="outlined"
+            label="Video Link"
+            value={url}
+            onChangeText={e => {
+              setUrl(e);
+            }}
+            style={{
+              backgroundColor: '#fff',
+              width: '100%',
+              marginTop: 10,
+              marginBottom: 25,
+            }}
+          />
+
+
+
         </View>
 
 
-         
-        <Divider bold={true} style={{marginBottom: 5}} />
-        
+
+        <Divider bold={true} style={{ marginBottom: 5 }} />
+
 
         <Button
           mode={'contained'}
-          style={{marginVertical: 20}}
+          style={{ marginVertical: 20 }}
           onPress={() => {
             onAddWorkOut();
           }}>

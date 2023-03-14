@@ -163,7 +163,7 @@ const NutritionScreen = ({ navigation }) => {
                 </Text>
                 <ScrollView keyboardShouldPersistTaps='always' style={{ width: '100%', padding: 5, height: '100%' }} >
                     {
-                        mealPlans.length == 0 ?
+                        mealPlans?.length == 0 ?
                             (
                                 <View style={{ height: Dimensions.get('window').height - 180, alignItems: 'center', justifyContent: 'center' }}>
                                     <Text>

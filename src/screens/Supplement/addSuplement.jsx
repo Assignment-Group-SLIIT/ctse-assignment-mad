@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Pressable } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../../core/theme';
@@ -7,6 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Button from '../../components/Button';
 import { SafeAreaView } from "react-native-safe-area-context"
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const AddSuppplement = ({ navigation }) => {
 
@@ -16,6 +17,9 @@ const AddSuppplement = ({ navigation }) => {
     const [errMsg, setErrMsg] = useState("")
     const [isOpenSnackBar, setOpenSnackBar] = useState(false);
 
+    // Set an initializing state whilst Firebase connects
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState();
 
     const onToggleSnackBar = () => {
         setOpenSnackBar(true)
@@ -25,6 +29,16 @@ const AddSuppplement = ({ navigation }) => {
         setOpenSnackBar(false)
     }
 
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
+    useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber; // unsubscribe on unmount
+    }, []);
 
 
     const AddInstructions = async () => {
@@ -32,6 +46,7 @@ const AddSuppplement = ({ navigation }) => {
             setErrMsg("Please fill the fields !!")
         } else {
             const supplementData = {
+                tenantId: user?.uid,
                 id: '',
                 supplementName,
                 instructionList,

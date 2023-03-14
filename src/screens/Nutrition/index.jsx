@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Alert, Pressable, StyleSheet, View } from "react-native"
+import { Pressable, StyleSheet, View, Dimensions } from "react-native"
 import { Text, FAB, Modal, Provider, Portal, Divider, TextInput, Snackbar, Dialog, Button } from "react-native-paper";
 import { theme } from '../../core/theme';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -53,6 +54,9 @@ const NutritionScreen = ({ navigation }) => {
     const [msg, setMsg] = useState("Oops... Something went wrong");
     const [isDelete, setIsDelete] = useState(false);
     const [selectedId, setSelectedId] = useState("")
+    // Set an initializing state whilst Firebase connects
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState();
 
     const showDialog = () => setIsDelete(true);
 
@@ -65,22 +69,49 @@ const NutritionScreen = ({ navigation }) => {
     const hideModal = () => setVisible(false);
 
     useEffect(() => {
-        const subscriber = firestore()
-            .collection('meals')
-            .onSnapshot(querySnapshot => {
-                const meals = [];
+        // const subscriber = firestore()
+        //     .collection('meals')
+        //     .onSnapshot(querySnapshot => {
+        //         const meals = [];
 
-                querySnapshot.forEach(documentSnapshot => {
-                    meals.push(documentSnapshot.data());
+        //         querySnapshot.forEach(documentSnapshot => {
+        //             meals.push(documentSnapshot.data());
+        //         });
+
+        //         setMealPlans(meals);
+        //         setIsLoading(false);
+        //     });
+        if (user) {
+            const subscriber = firestore()
+                .collection('meals')
+                .where('tenantId', '==', user.uid)
+                .onSnapshot(querySnapshot => {
+                    const meals = [];
+
+                    querySnapshot.forEach(documentSnapshot => {
+                        meals.push(documentSnapshot.data());
+                    });
+
+                    setMealPlans(meals);
+                    setIsLoading(false);
                 });
+            // Unsubscribe from events when no longer in use
+            return () => subscriber();
+        }
 
-                setMealPlans(meals);
-                setIsLoading(false);
-            });
+    }, [user]);
 
-        // Unsubscribe from events when no longer in use
-        return () => subscriber();
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
+    useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber; // unsubscribe on unmount
     }, []);
+
 
     const onIconPress = async () => {
         if (!isUpdating) {
@@ -132,24 +163,33 @@ const NutritionScreen = ({ navigation }) => {
                 </Text>
                 <ScrollView keyboardShouldPersistTaps='always' style={{ width: '100%', padding: 5, height: '100%' }} >
                     {
-                        mealPlans.map((meal, index) => {
-                            return (
-                                <Pressable
-                                    key={index}
-                                    style={styles.card}
-                                    onPress={() => { showModal(); setSelectedMeal(mealPlans[index]) }}
-                                    onLongPress={(e) => { showDialog(); setSelectedId(mealPlans[index]?.id) }}
-                                >
-                                    <View style={styles.cardView}>
-                                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{meal?.name?.charAt(0)}</Text>
-                                    </View>
-                                    <Text style={{ fontSize: 20 }}>{meal.name}</Text>
-                                </Pressable>
+                        mealPlans.length == 0 ?
+                            (
+                                <View style={{ height: Dimensions.get('window').height - 180, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text>
+                                        No records to display...
+                                    </Text>
+                                </View>
+                            ) :
+                            (
+                                mealPlans?.map((meal, index) => {
+                                    return (
+                                        <Pressable
+                                            key={index}
+                                            style={styles.card}
+                                            onPress={() => { showModal(); setSelectedMeal(mealPlans[index]) }}
+                                            onLongPress={(e) => { showDialog(); setSelectedId(mealPlans[index]?.id) }}
+                                        >
+                                            <View style={styles.cardView}>
+                                                <Text style={{ fontSize: 22, fontWeight: 'bold' }}>{meal?.name?.charAt(0)}</Text>
+                                            </View>
+                                            <Text style={{ fontSize: 20 }}>{meal.name}</Text>
+                                        </Pressable>
 
+                                    )
+                                })
                             )
-                        })
                     }
-
                 </ScrollView>
                 {
                     isLoading &&
@@ -339,7 +379,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         paddingTop: 10,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     headerTxt: {
         fontSize: 24,

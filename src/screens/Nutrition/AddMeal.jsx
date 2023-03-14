@@ -7,6 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from "react-native-safe-area-context"
 import Button from '../../components/Button';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const AddMeal = ({ navigation }) => {
     const [name, setName] = useState("");
@@ -18,8 +19,23 @@ const AddMeal = ({ navigation }) => {
     const [visible, setVisible] = useState(false);
     const [msg, setMsg] = useState("Oops... Something went wrong");
 
+    // Set an initializing state whilst Firebase connects
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState();
+
     const onToggleSnackBar = () => setVisible(!visible);
     const onDismissSnackBar = () => setVisible(false);
+
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
+    useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber; // unsubscribe on unmount
+    }, []);
 
     const onAddMeal = () => {
 
@@ -34,6 +50,7 @@ const AddMeal = ({ navigation }) => {
 
         const meal = {
             id: "",
+            tenantId: user?.uid,
             name,
             breakfast,
             lunch,

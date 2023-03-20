@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Pressable, StyleSheet, View, TextInput, Dimensions } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Pressable, StyleSheet, View, TextInput, Dimensions} from 'react-native';
 import {
   Text,
   FAB,
@@ -14,15 +14,16 @@ import {
   Dialog,
   Button,
 } from 'react-native-paper';
-import { theme } from '../../core/theme';
-import { ScrollView } from 'react-native-gesture-handler';
+import {theme} from '../../core/theme';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressIndicator from '../../components/ProgressIndicator';
 import DropDown from 'react-native-paper-dropdown';
 
-const WorkoutScreen = ({ navigation }) => {
+const WorkoutScreen = ({navigation}) => {
   const [workouts, setWorkouts] = useState([]);
   const [selectedWorkOut, setSelectedWorkOut] = useState({
+    tenantId: '',
     id: '',
     name: '',
     packageType: '',
@@ -53,6 +54,33 @@ const WorkoutScreen = ({ navigation }) => {
 
   const [showDropDown, setShowDropDown] = useState(false);
 
+  const [selectionOne, setSelectionOne] = useState(false);
+  const [selectionTwo, setSelectionTwo] = useState(false);
+  const [selectionThree, setSelectionThree] = useState(false);
+  const [selectedPackage,setSelectedPackage]=useState('')
+
+  const [editable,setEditable]=useState(false)
+
+  const setSelections = (value)=>{
+    console.log(value)
+    if(value == '1'){
+      setSelectionOne(true)
+      setSelectionTwo(false)
+      setSelectionThree(false)
+      setSelectedPackage('Weight Gain')
+    }else if(value == '2' ){
+      setSelectionOne(false)
+      setSelectionTwo(true)
+      setSelectionThree(false)
+      setSelectedPackage('Fat Loss')
+    }else{
+      setSelectionOne(false)
+      setSelectionTwo(false)
+      setSelectionThree(true)
+      setSelectedPackage('Regular')
+    }
+  }
+
   const packages = [
     {
       label: 'Weight Gain',
@@ -69,7 +97,7 @@ const WorkoutScreen = ({ navigation }) => {
   ];
 
   const setPackage = e => {
-    const newSelectedWorkOut = { ...selectedWorkOut };
+    const newSelectedWorkOut = {...selectedWorkOut};
     newSelectedWorkOut.packageType = e;
     setSelectedWorkOut(newSelectedWorkOut);
   };
@@ -98,6 +126,33 @@ const WorkoutScreen = ({ navigation }) => {
     }
   }, [user]);
 
+
+  useEffect(()=>{
+    if (user) {
+      const subscriber = firestore()
+        .collection('workouts')
+        .where('tenantId', '==', user.uid)
+        .onSnapshot(querySnapshot => {
+          const workouts = [];
+
+          querySnapshot.forEach(documentSnapshot => {
+            console.log(documentSnapshot.data().packageType)
+            if(documentSnapshot.data().packageType == selectedPackage){
+              workouts.push(documentSnapshot.data());
+            }       
+          });
+          setWorkouts(workouts);
+          setIsLoading(false);
+        });
+
+      // Unsubscribe from events when no longer in use
+      return () => subscriber();
+    }
+    
+  },[selectionOne,selectionTwo,selectionThree])
+
+
+
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
@@ -110,6 +165,12 @@ const WorkoutScreen = ({ navigation }) => {
   }, []);
 
   const onIconPress = async () => {
+    if(editable){
+      setEditable(false)
+    }else{
+      setEditable(true)
+    }
+ 
     if (!isUpdating) {
       setIconName('content-save-outline');
       setIsUpdating(true);
@@ -119,7 +180,7 @@ const WorkoutScreen = ({ navigation }) => {
     await firestore()
       .collection('workouts')
       .doc(selectedWorkOut.id)
-      .update({ ...selectedWorkOut })
+      .update({...selectedWorkOut})
       .then(() => {
         setIconName('square-edit-outline');
         setIsUpdating(false);
@@ -153,45 +214,63 @@ const WorkoutScreen = ({ navigation }) => {
       });
   };
 
+
+
   return (
     <Provider>
       <SafeAreaView style={styles.container}>
         <Text style={styles.headerTxt}>Workouts Collection</Text>
+        <View style={styles.tabs}>
+          <Button style={[styles.tabTO, {backgroundColor: selectionOne?'#1ebeff':null}]}
+          onPress={()=>setSelections('1')}>
+            Weight Gain
+          </Button>
+          <Button style={[styles.tabTO,{backgroundColor: selectionTwo?'#1ebeff':null}]}
+          onPress={()=>setSelections('2')}>
+            Fat-Loss
+          </Button>
+          <Button style={[styles.tabTO,{backgroundColor: selectionThree?'#1ebeff':null}]}
+          onPress={()=>setSelections('3')}>
+            Regular
+          </Button>
+        </View>
+
         <ScrollView
           keyboardShouldPersistTaps="always"
-          style={{ width: '100%', padding: 5, height: '100%' }}>
-          {
-            workouts?.length == 0 ?
-              (
-                <View style={{ height: Dimensions.get('window').height - 180, alignItems: 'center', justifyContent: 'center' }}>
-                  <Text>
-                    No records to display...
-                  </Text>
-                </View>
-              ) :
-              (workouts.map((workout, index) => {
-                return (
-                  <Pressable
-                    key={index}
-                    style={styles.card}
-                    onPress={() => {
-                      showModal();
-                      setSelectedWorkOut(workouts[index]);
-                    }}
-                    onLongPress={e => {
-                      showDialog();
-                      setSelectedId(workouts[index]?.id);
-                    }}>
-                    <View style={styles.cardView}>
-                      <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
-                        {workout?.name?.charAt(0)}
-                      </Text>
-                    </View>
-                    <Text style={{ fontSize: 20 }}>{workout.name}</Text>
-                  </Pressable>
-                );
-              }))
-          }
+          style={{width: '100%', padding: 5, height: '100%'}}>
+          {workouts?.length == 0 ? (
+            <View
+              style={{
+                height: Dimensions.get('window').height - 180,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text>No records to display...</Text>
+            </View>
+          ) : (
+            workouts.map((workout, index) => {
+              return (
+                <Pressable
+                  key={index}
+                  style={styles.card}
+                  onPress={() => {
+                    showModal();
+                    setSelectedWorkOut(workouts[index]);
+                  }}
+                  onLongPress={e => {
+                    showDialog();
+                    setSelectedId(workouts[index]?.id);
+                  }}>
+                  <View style={styles.cardView}>
+                    <Text style={{fontSize: 22, fontWeight: 'bold'}}>
+                      {workout?.name?.charAt(0)}
+                    </Text>
+                  </View>
+                  <Text style={{fontSize: 20}}>{workout.name}</Text>
+                </Pressable>
+              );
+            })
+          )}
         </ScrollView>
         {isLoading && <ProgressIndicator isLoading={isLoading} />}
         <FAB
@@ -219,20 +298,27 @@ const WorkoutScreen = ({ navigation }) => {
                 position: 'relative',
               }}>
               <Text
-                style={{ fontSize: 20, textAlign: 'center', fontWeight: '700' }}>
+                style={{fontSize: 20, textAlign: 'center', fontWeight: '700'}}>
                 {selectedWorkOut?.name}
               </Text>
               <Pressable
                 onPress={() => {
+                  hideModal();
+                }}
+                style={{position: 'absolute', left: 0,bottom:0 }}>
+                <Icon name='close-outline' size={35} color={theme.colors.error} />
+              </Pressable>
+              <Pressable
+                onPress={() => {
                   onIconPress();
                 }}
-                style={{ position: 'absolute', right: 0 }}>
+                style={{position: 'absolute', right: 0}}>
                 <Icon name={iconName} size={35} color={theme.colors.primary} />
               </Pressable>
             </View>
             <ScrollView
               keyboardShouldPersistTaps="always"
-              style={{ width: '100%', padding: 5, height: '100%' }}>
+              style={{width: '100%', padding: 5, height: '100%',marginTop:30}}>
               <DropDown
                 label={'Package Type'}
                 mode={'outlined'}
@@ -242,7 +328,7 @@ const WorkoutScreen = ({ navigation }) => {
                 value={selectedWorkOut.packageType}
                 setValue={e => setPackage(e)}
                 list={packages}
-                disabled={!isUpdating}
+                editable={false}
               />
               <View
                 style={{
@@ -266,7 +352,7 @@ const WorkoutScreen = ({ navigation }) => {
                   label="Name of Exercise"
                   value={selectedWorkOut.name}
                   onChangeText={e => {
-                    const newSelectedWorkOut = { ...selectedWorkOut };
+                    const newSelectedWorkOut = {...selectedWorkOut};
                     newSelectedWorkOut.name = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
@@ -275,8 +361,10 @@ const WorkoutScreen = ({ navigation }) => {
                     width: '100%',
                     marginTop: 2,
                     marginBottom: 25,
+                    fontWeight:'bold',
+                    color:'#000'
                   }}
-                  disabled={!isUpdating}
+                  editable={editable}
                 />
                 <Text
                   style={{
@@ -294,7 +382,7 @@ const WorkoutScreen = ({ navigation }) => {
                   keyboardType="numeric"
                   value={selectedWorkOut.caloriesBurnt}
                   onChangeText={e => {
-                    const newSelectedWorkOut = { ...selectedWorkOut };
+                    const newSelectedWorkOut = {...selectedWorkOut};
                     newSelectedWorkOut.caloriesBurnt = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
@@ -303,8 +391,11 @@ const WorkoutScreen = ({ navigation }) => {
                     width: '100%',
                     marginTop: 2,
                     marginBottom: 25,
+                    fontWeight:'bold',
+                    color:'#000'
+                    
                   }}
-                  disabled={!isUpdating}
+                  editable={editable}
                 />
                 <Text
                   style={{
@@ -321,7 +412,7 @@ const WorkoutScreen = ({ navigation }) => {
                   keyboardType="numeric"
                   value={selectedWorkOut.duration}
                   onChangeText={e => {
-                    const newSelectedWorkOut = { ...selectedWorkOut };
+                    const newSelectedWorkOut = {...selectedWorkOut};
                     newSelectedWorkOut.duration = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
@@ -330,8 +421,11 @@ const WorkoutScreen = ({ navigation }) => {
                     width: '100%',
                     marginTop: 2,
                     marginBottom: 25,
+                    fontWeight:'bold',
+                    color:'#000'
+                    
                   }}
-                  disabled={!isUpdating}
+                  editable={editable}
                 />
                 <Text
                   style={{
@@ -349,7 +443,7 @@ const WorkoutScreen = ({ navigation }) => {
                   label="Instructions"
                   value={selectedWorkOut.steps}
                   onChangeText={e => {
-                    const newSelectedWorkOut = { ...selectedWorkOut };
+                    const newSelectedWorkOut = {...selectedWorkOut};
                     newSelectedWorkOut.steps = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
@@ -358,8 +452,11 @@ const WorkoutScreen = ({ navigation }) => {
                     width: '100%',
                     marginTop: 2,
                     marginBottom: 25,
+                    fontWeight:'bold',
+                    color:'#000'
+                    
                   }}
-                  disabled={!isUpdating}
+                  editable={editable}
                 />
                 <Text
                   style={{
@@ -375,7 +472,7 @@ const WorkoutScreen = ({ navigation }) => {
                   label="Video Link"
                   value={selectedWorkOut.url}
                   onChangeText={e => {
-                    const newSelectedWorkOut = { ...selectedWorkOut };
+                    const newSelectedWorkOut = {...selectedWorkOut};
                     newSelectedWorkOut.url = e;
                     setSelectedWorkOut(newSelectedWorkOut);
                   }}
@@ -384,8 +481,11 @@ const WorkoutScreen = ({ navigation }) => {
                     width: '100%',
                     marginTop: 2,
                     marginBottom: 25,
+                    fontWeight:'bold',
+                    color:'#000'
+                    
                   }}
-                  disabled={!isUpdating}
+                  editable={editable}
                 />
               </View>
             </ScrollView>
@@ -479,6 +579,21 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 1,
     margin: 10,
+  },
+  tabs: {
+    width: '100%',
+    height: '5%',
+    margin: '2%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  tabTO: {
+    width: "30%",
+    height: '100%',
+    borderRadius: 20,
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

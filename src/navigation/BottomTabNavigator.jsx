@@ -50,8 +50,8 @@ const BottomTabNavigator = () => {
                 },
                 tabBarActiveTintColor: '#000',
                 tabBarInactiveTintColor: '#FFFFFF',
-                tabBarHideOnKeyboard: true,
-                tabBarShowLabel: false
+                tabBarHideOnKeyboard: false,
+                tabBarShowLabel: false,
             })}
             initialRouteName='Home'>
             <Tab.Screen name='Home' component={HomeStackNavigator} />

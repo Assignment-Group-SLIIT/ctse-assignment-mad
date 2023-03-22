@@ -50,7 +50,7 @@ const BottomTabNavigator = () => {
                 },
                 tabBarActiveTintColor: '#000',
                 tabBarInactiveTintColor: '#FFFFFF',
-                tabBarHideOnKeyboard: false,
+                tabBarHideOnKeyboard: true,
                 tabBarShowLabel: false,
             })}
             initialRouteName='Home'>

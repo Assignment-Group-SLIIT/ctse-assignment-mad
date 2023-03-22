@@ -51,24 +51,14 @@ const LoginScreen = ({ navigation }) => {
             <OnboardFlow pages={[
                 {
                     title: 'Welcome to GetFit',
-                    subtitle: '',
-                    imageUri: 'https://illlustrations.co/static/f8a168f23ea5623d0c8987b551729183/day78-wallet.png'
+                    subtitle: 'Your Personal Fitness Planner',
+                    imageUri: 'https://i.ibb.co/7zcdSLs/logo02.png'
                 },
                 {
-                    title: 'Kanna dennam',
-                    subtitle: 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum?',
-                    imageUri: 'https://i.ibb.co/170PBYq/undraw-Check-boxes-re-v40f.png'
-                },
-                {
-                    title: 'Bonna dennam',
-                    subtitle: 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
-                    imageUri: 'https://i.ibb.co/VvqXnSF/undraw-audio-player-re-cl20.png'
-                },
-                {
-                    title: 'Oni nm Get started karanna :)',
-                    subtitle: 'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
-                    imageUri: 'https://i.ibb.co/CbtxF6b/undraw-Jogging-re-k28i.png'
-                },
+                    title: 'You Don\'t Have to Memorize Things',
+                    subtitle: 'Now you can plan personal workouts, meal plans, supplements and reminders for your clients',
+                    imageUri: 'https://i.ibb.co/KmgdW1m/101-gym-guy-removebg-preview.png'
+                }
             ]}
                 type='fullscreen' // Change to either 'fullscreen', 'bottom-sheet', or 'inline'
                 paginationSelectedColor={theme.colors.primary}
@@ -117,7 +107,7 @@ const LoginScreen = ({ navigation }) => {
                 action={{
                     label: 'Dismiss',
                     onPress: () => {
-                        // Do something
+                        onDismissSnackBar();
                     },
                 }}>
                 {msg}

@@ -8,9 +8,6 @@ import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import AuthStackNavigator from './src/navigation/stackNavigators/AuthStackNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
 import { theme } from './src/core/theme';
 import { Provider } from 'react-native-paper';
 
@@ -59,14 +56,10 @@ const App = () => {
               headerShown: false,
             }}>
             {!user ? (
-              <>
-                <Stack.Screen name="Auth" component={AuthStackNavigator} />
+              <Stack.Screen name="Auth" component={AuthStackNavigator} />
 
-              </>
             ) : (
-              <>
-                <Stack.Screen name="Root" component={BottomTabNavigator} />
-              </>
+              <Stack.Screen name="Root" component={BottomTabNavigator} />
             )}
 
           </Stack.Navigator>

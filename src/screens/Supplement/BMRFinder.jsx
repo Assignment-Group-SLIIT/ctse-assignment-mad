@@ -60,7 +60,7 @@ const BMRFinder = () => {
                         style={{
                             textAlign: 'center',
                             fontSize: 25,
-                            fontWeight: 40,
+                            fontWeight: "bold",
                             marginBottom: 20
                         }}
                     >

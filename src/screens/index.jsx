@@ -20,6 +20,8 @@ const HomeScreen = ({ navigation }) => {
                 <Button mode={"contained"} icon="calculator" onPress={() => { navigation.navigate("BMICalculator") }}>BMI Calculator</Button>
                 <Button mode={"contained"} icon="weight-kilogram" onPress={() => { navigation.navigate("WeightConverterScreen") }}>Weight Convertor</Button>
                 <Button mode={"contained"} icon="nutrition" onPress={() => { navigation.navigate("MacroFinderScreen") }}>Macro Finder</Button>
+                <Button mode={"contained"} icon="check-network" onPress={() => { navigation.navigate("BMRFinder") }}>Cal/BMR Calculator</Button>
+
                 <Button mode={"contained"} icon="logout" onPress={() => {
                     onToggleSnackBar();
                     auth().signOut();

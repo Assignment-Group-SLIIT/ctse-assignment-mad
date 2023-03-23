@@ -14,6 +14,6 @@ export const theme = {
     black: '#000000',
     inactive: '#808080',
     active: '#1ebeff',
-    tabBarBackground: "#1ebeff"
+    tabBarBackground: "#1ebeff",
   },
 };

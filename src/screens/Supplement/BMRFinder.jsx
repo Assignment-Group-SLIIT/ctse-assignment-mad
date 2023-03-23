@@ -44,10 +44,6 @@ const BMRFinder = () => {
         setBMRVal(BMR_value)
     }
 
-    console.log("gender", gender)
-
-
-
 
 
 

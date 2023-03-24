@@ -52,16 +52,9 @@ const AddSuppplement = ({ navigation }) => {
                 instructionList,
                 description
             };
-            // let response = await firestore().collection('supplement').add(supplementData)
-            // console.log(">>>", response)
-            // if (response) {
-            //     let responseUpdate = await firestore().collection('supplement').doc(supplementData.id).update({ 'id': supplementData.id })
-
-            //     console.log("resUpdate>>>", responseUpdate)
-            // }
 
             firestore().collection('supplement').add(supplementData).then((value) => {
-                let responseUpdate = firestore().collection('supplement').doc(value.id).update({ 'id': value.id });
+                let response = firestore().collection('supplement').doc(value.id).update({ 'id': value.id });
                 setErrMsg("Supplement Added Succesfully !!!");
                 onToggleSnackBar();
                 navigation.navigate("SupplementHome")

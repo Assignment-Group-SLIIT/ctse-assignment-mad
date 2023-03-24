@@ -115,7 +115,6 @@ const BMRFinder = () => {
                 <View style={styles.button}>
                     <Button
                         mode={'contained'}
-                        // style={{ marginVertical: 20 }}
                         onPress={() => {
                             onSubmit()
                         }}>

@@ -71,7 +71,6 @@ const SupplementScreen = ({ navigation }) => {
 
     const GetSupplementDetails = async () => {
 
-        // let list = 
         const subscriber = await firestore().collection('supplement').where('tenantId', '==', user.uid).onSnapshot(querySnapshot => {
             const supplements = [];
             querySnapshot.forEach(documentSnapshot => {
@@ -109,7 +108,7 @@ const SupplementScreen = ({ navigation }) => {
         }
     }, [user])
 
-    // Handle user state changes
+
     function onAuthStateChanged(user) {
         setUser(user);
         if (initializing) setInitializing(false);

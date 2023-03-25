@@ -40,7 +40,6 @@ const BMRFinder = () => {
 
         try {
             let data = `https://urvipaithankar.herokuapp.com/bmr/index.php/${height}/${weight}/${age}/${gender} `
-            console.log("data>>>", data)
             setData(data)
             const myCalorieNeeds = fitnessCalculatorFunctions.calorieNeeds(gender, parseInt(age), parseInt(height), parseInt(weight), "active");
             const BMR_value = fitnessCalculatorFunctions.BMR(gender, parseInt(age), parseInt(height), parseInt(weight));

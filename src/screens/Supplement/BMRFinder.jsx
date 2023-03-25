@@ -20,6 +20,7 @@ const BMRFinder = () => {
     let [gender, setGender] = useState('')
     let [caloriesNeed, setCaloryNeed] = useState()
     let [BMRVal, setBMRVal] = useState()
+    let [data, setData] = useState()
 
     const [showDropDown, setShowDropDown] = useState(false);
 
@@ -37,11 +38,20 @@ const BMRFinder = () => {
 
     const onSubmit = async () => {
 
-        const myCalorieNeeds = fitnessCalculatorFunctions.calorieNeeds(gender, parseInt(age), parseInt(height), parseInt(weight), "active");
-        const BMR_value = fitnessCalculatorFunctions.BMR(gender, parseInt(age), parseInt(height), parseInt(weight));
+        try {
+            let data = `https://urvipaithankar.herokuapp.com/bmr/index.php/${height}/${weight}/${age}/${gender} `
+            console.log("data>>>", data)
+            setData(data)
+            const myCalorieNeeds = fitnessCalculatorFunctions.calorieNeeds(gender, parseInt(age), parseInt(height), parseInt(weight), "active");
+            const BMR_value = fitnessCalculatorFunctions.BMR(gender, parseInt(age), parseInt(height), parseInt(weight));
 
-        setCaloryNeed(myCalorieNeeds);
-        setBMRVal(BMR_value)
+            setCaloryNeed(myCalorieNeeds);
+            setBMRVal(BMR_value)
+        } catch (err) {
+
+        }
+
+
     }
 
 
